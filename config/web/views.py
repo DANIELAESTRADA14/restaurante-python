@@ -1,11 +1,53 @@
 from django.shortcuts import render
+from django.shortcuts import redirect
 from web.formularios.formularioPlatos import FormularioPlatos
 from web.formularios.formularioRegistro import FormularioRegistros
+from web.formularios.formularioEdicionPlatos import FomularioEdicionPlatos
 from web.models import Platos, Empleados
 
 # Create your views here.
 def Home(request):
     return render(request, 'index.html')
+
+def MenuPlatos(request):
+    # Traer datos de db
+    platosConsultados = Platos.objects.all()
+    formulario = FomularioEdicionPlatos()
+    # Llevarlos al template
+    diccionarioEnvio={
+        'platos': platosConsultados,
+        'formulario': formulario
+    }
+
+    return render(request, 'menuPlatos.html', diccionarioEnvio)
+
+def MenuPersonal(request):
+    personalConsultado = Empleados.objects.all()
+    for empleado in personalConsultado:
+        tipo = empleado.cargo
+        if tipo == 1:
+            empleado.cargo = 'Cocinero'
+    diccionarioPersonal={
+        'personas': personalConsultado
+    }
+    return render(request, 'menuPersonal.html', diccionarioPersonal)
+
+def EditarPlatos(request, id):
+    # Recibir datos del formulario y editar 
+    print(id)
+    if request.method == 'POST':
+        datosDelFormulario = FomularioEdicionPlatos(request.POST)
+        if datosDelFormulario.is_valid():
+            datosPlato = datosDelFormulario.cleaned_data
+            try:
+                Platos.objects.filter(pk=id).update(precio=datosPlato['precioPlato'])
+                print('Exito guardando')
+            except Exception as error:
+                
+                print(f'error: {error}')
+             
+    return redirect('menu')
+
 
 def VistaPlatos(request):
     formulario = FormularioPlatos()
