@@ -1,0 +1,21 @@
+.text-menu {
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.nombre-entrada{
+    text-align: center;
+    margin-top: 5px;
+}
+
+.entrada-descripcion{
+    font-family: 'Times New Roman';
+    text-align: center;
+}
+
+.entrada-precio{
+    color: crimson;
+    text-align: center;
+    font-weight: 600;
+    margin-top: -10px;
+}

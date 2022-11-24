@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from web.formularios.formularioPlatos import FormularioPlatos
 from web.formularios.formularioRegistro import FormularioRegistros
-from web.formularios.formularioEdicionPlatos import FomularioEdicionPlatos
+from web.formularios.formularioEdicionPlatos import FomularioEdicionPlatos, FormularioEdicionSalario
 from web.models import Platos, Empleados
 
 # Create your views here.
@@ -12,23 +12,34 @@ def Home(request):
 def MenuPlatos(request):
     # Traer datos de db
     platosConsultados = Platos.objects.all()
+    entradas = Platos.objects.filter(tipo = 1)
+    fuertes = Platos.objects.filter(tipo = 2)
+    postres = Platos.objects.filter(tipo = 3)
     formulario = FomularioEdicionPlatos()
+ 
     # Llevarlos al template
     diccionarioEnvio={
         'platos': platosConsultados,
-        'formulario': formulario
+        'formulario': formulario,
+        'entradas': entradas,
+        'fuertes': fuertes,
+        'postres': postres
     }
 
     return render(request, 'menuPlatos.html', diccionarioEnvio)
 
 def MenuPersonal(request):
     personalConsultado = Empleados.objects.all()
+    formulario = FormularioEdicionSalario()
     for empleado in personalConsultado:
         tipo = empleado.cargo
         if tipo == 1:
             empleado.cargo = 'Cocinero'
+        elif tipo ==2:
+            empleado.cargo = 'Asistente'
     diccionarioPersonal={
-        'personas': personalConsultado
+        'personas': personalConsultado,
+        'formulario': formulario
     }
     return render(request, 'menuPersonal.html', diccionarioPersonal)
 
@@ -47,6 +58,18 @@ def EditarPlatos(request, id):
                 print(f'error: {error}')
              
     return redirect('menu')
+
+def EditarSalario(request, id):
+    if request.method == 'POST':
+        datosFormulario = FormularioEdicionSalario(request.POST)
+        if datosFormulario.is_valid():
+            datosSalario= datosFormulario.cleaned_data
+            try:
+                Empleados.objects.filter(pk=id).update(salario=datosSalario['salario'])
+            except Exception as error:
+                print(f'error: {error}')
+
+    return redirect('admin')
 
 
 def VistaPlatos(request):

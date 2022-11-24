@@ -7,3 +7,10 @@ class FomularioEdicionPlatos(forms.Form):
         label='Precio',
         required=True,
     )
+
+class FormularioEdicionSalario(forms.Form):
+    
+    salario = forms.CharField(
+        widget= forms.NumberInput(attrs={'class': 'form-control mb-3'}),
+        required=True,
+    )
